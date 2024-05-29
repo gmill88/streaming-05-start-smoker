@@ -44,10 +44,42 @@ smoker-temps.csv has 4 columns:
 1. To be guided through the producer design, read https://nwmissouri.instructure.com/courses/60464/pages/module-5-dot-1-guided-producer-design?wrap=1 
 2. For a bit more guidance on the coding implementation, read https://nwmissouri.instructure.com/courses/60464/pages/module-5-dot-2-guided-producer-implementation?wrap=1
 
-### Producer Setup
+### Producer Code Setup
 - Import pika, csv, sys, and webbrowser.
 - Add util_logger.py file to the repository and initialize logging .
 - Create a function that offers to open RabbitMQ Admin site. 
 - Write a function that connects to RabbitMQ, creates 3 queues, and deletes existing queues with the same name. 
 - Create a function that establishes a path to the smoker-temps.csv and extracts the desired info from each row.
 - Create a send_message function that sends the message to the specified queue. 
+
+## Run the Code
+### Create A Virtual Environment 
+1. Open a terminal window in VS Code.
+1. Use the built-in Python utility venv to create a new virtual environment named `.venv` in the current directory.
+
+```shell
+python3 -m venv .venv
+```
+
+Verify you get a new .venv directory in your project. 
+We use .venv as the name to keep it away from our project files. 
+
+### Activate the Virtual Environment
+
+In the same VS Code terminal window, activate the virtual environment.
+
+- On Linux/MacOS, run: `source .venv/bin/activate`
+
+Verify you see the virtual environment name (.venv) in your terminal prompt.
+
+### Start RabbitMQ Server
+
+On a mac terminal, start the RabbitMQ server.
+
+- On MacOS, run `brew services start rabbitmq`
+
+### Execute the Producer
+
+1. Run the producer in the VS Code terminal
+- Open the terminal in VS Code and run `python Bbq_producer.py` to send the tasks to the RabbitMQ queue
+ 
