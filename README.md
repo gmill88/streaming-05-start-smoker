@@ -82,4 +82,6 @@ On a mac terminal, start the RabbitMQ server.
 
 1. Run the producer in the VS Code terminal
 - Open the terminal in VS Code and run `python Bbq_producer.py` to send the tasks to the RabbitMQ queue
+
+![Producer Image](image3.png)
  
