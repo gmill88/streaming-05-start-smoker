@@ -25,15 +25,18 @@ def offer_rabbitmq_admin_site():
         logger.info("Opened RabbitMQ")
 
 
-
+# Connect to RabbitMQ server
 def connect_rabbitmq():
     try:
+        # create a blocking connection to the RabbitMQ server
         conn = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
         ch = conn.channel()
 
         queues = ["01-smoker", "02-food-A", "02-food-B"]
         for queue_name in queues:
+            # Delete existing queues and declare them anew
             ch.queue_delete(queue=queue_name)
+            # use the channel to declare a durable queue
             ch.queue_declare(queue=queue_name, durable=True)
 
         return conn, ch 
@@ -41,9 +44,9 @@ def connect_rabbitmq():
         logger.error(f"Error: Connection to RabbitMQ server failed: {e}")
         sys.exit(1)
 
+# Preocess CSV and send message to RabbitMQ queues
 def csv_processing():
     try:
-
         csv_path = "/Users/grahammiller/streaming-05-start-smoker/smoker-temps.csv"
         with open(csv_path, newline='', encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -53,6 +56,7 @@ def csv_processing():
                 food_A_temp_str = data_row['Channel2']
                 food_B_temp_str = data_row['Channel3']
 
+                # Checks if strings are empty
                 if smoker_temp_str:
                     smoker_temp = float(smoker_temp_str)
                     send_message("01-smoker", (timestamp, smoker_temp))
@@ -73,6 +77,13 @@ def csv_processing():
         sys.exit(1)
 
 def send_message(queue_name: str, message: tuple):
+    """ 
+    Send message to queue
+    
+    Parameters:
+        message; The message sent to the queue
+        queue_name: name of the queue
+    """
 
     try:
         conn, ch = connect_rabbitmq()
@@ -81,6 +92,7 @@ def send_message(queue_name: str, message: tuple):
     except Exception as e:
         logger.error(f"Error sending message to {queue_name}: {e}")  
     finally:
+        # Close connection to the server
         conn.close()  
 
 
