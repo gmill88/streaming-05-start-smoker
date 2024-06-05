@@ -94,4 +94,12 @@ The consumer script listens to the RabbitMQ queue for data from the smoker-temps
 - Open the terminal in either VS code or in the mac terminal and run `python Bbq_consumer.py`
 
 ![Consumer Image](image4.png)
+
+#### Smoker Decrease Image
+
+![Smoker Stall Image](image5.png)
+
+#### Food A and Food B Stall
+
+![Food A and Food B Stall](image6.png)
  
