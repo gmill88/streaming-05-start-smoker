@@ -10,6 +10,8 @@ import pika
 import sys
 import webbrowser
 import csv
+import struct
+import time
 
 # Configure Logging
 from util_logger import setup_logger
@@ -24,7 +26,6 @@ def offer_rabbitmq_admin_site():
         webbrowser.open_new("http://localhost:15672/#/queues")
         logger.info("Opened RabbitMQ")
 
-
 # Connect to RabbitMQ server
 def connect_rabbitmq():
     try:
@@ -34,9 +35,7 @@ def connect_rabbitmq():
 
         queues = ["01-smoker", "02-food-A", "02-food-B"]
         for queue_name in queues:
-            # Delete existing queues and declare them anew
-            ch.queue_delete(queue=queue_name)
-            # use the channel to declare a durable queue
+            # Declare the queue
             ch.queue_declare(queue=queue_name, durable=True)
 
         return conn, ch 
@@ -44,17 +43,19 @@ def connect_rabbitmq():
         logger.error(f"Error: Connection to RabbitMQ server failed: {e}")
         sys.exit(1)
 
-# Preocess CSV and send message to RabbitMQ queues
+# Process CSV and send message to RabbitMQ queues
 def csv_processing():
     try:
-        csv_path = "/Users/grahammiller/streaming-05-start-smoker/smoker-temps.csv"
+        csv_path = "smoker-temps.csv"
         with open(csv_path, newline='', encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile)
             for data_row in reader:
-                timestamp = data_row['Time (UTC)']
+                timestamp_str = data_row['Time (UTC)']
                 smoker_temp_str = data_row['Channel1']
                 food_A_temp_str = data_row['Channel2']
                 food_B_temp_str = data_row['Channel3']
+
+                timestamp = time.mktime(time.strptime(timestamp_str, "%m/%d/%y %H:%M:%S"))
 
                 # Checks if strings are empty
                 if smoker_temp_str:
@@ -87,14 +88,14 @@ def send_message(queue_name: str, message: tuple):
 
     try:
         conn, ch = connect_rabbitmq()
-        ch.basic_publish(exchange="", routing_key=queue_name, body=str(message))
+        packed_message = struct.pack('!df', message[0], message[1])
+        ch.basic_publish(exchange="", routing_key=queue_name, body=packed_message)
         logger.info(f"Sent message to {queue_name}: {message}")
     except Exception as e:
         logger.error(f"Error sending message to {queue_name}: {e}")  
     finally:
         # Close connection to the server
         conn.close()  
-
 
 if __name__ == "__main__":
     offer_rabbitmq_admin_site()
