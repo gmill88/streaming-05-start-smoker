@@ -80,8 +80,18 @@ On a mac terminal, start the RabbitMQ server.
 
 ### Execute the Producer
 
-1. Run the producer in the VS Code terminal
+1. Run the producer in the VS Code terminal 
 - Open the terminal in VS Code and run `python Bbq_producer.py` to send the tasks to the RabbitMQ queue
 
 ![Producer Image](image3.png)
+
+### Consumer
+The consumer script listens to the RabbitMQ queue for data from the smoker-temps csv. The consumer is setup to monitor if the smoker temperature drops over 15 degrees in 2.5 minutes, if food A temperature change stalls over a 10 minute period, and if food B temperature stalls over a 10 minute period. 
+
+### Execute the Consumer
+
+1. Run the consumer on either the VS code terminal or the mac terminal
+- Open the terminal in either VS code or in the mac terminal and run `python Bbq_consumer.py`
+
+![Consumer Image](image4.png)
  
